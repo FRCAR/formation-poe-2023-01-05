@@ -1,0 +1,20 @@
+@startuml
+!theme amiga
+actor resourceOwner as "Utilisateur (End-User)"
+participant client as "MonApp (Relying Party)"
+database authorizationServer as "OpenID Provider"
+
+resourceOwner -> client : GET /sale-figures
+
+client -> authorizationServer : POST https://api.authorization-server.com/openid-token\
+\n (avec toutes les requêtes oauth2 vues précédemment...)
+authorizationServer -> client : OpenIDConnect response (Id Token et Access Token)
+
+client-> client: vérification des champs de l'id token
+client-> client: vérification de la signature de l'id token
+client-> client: utilisation des claims de l'id token pour autoriser ou non les accès\
+\n aux ressources
+
+client -> resourceOwner: sales-figures
+
+@enduml

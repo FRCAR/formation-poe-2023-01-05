@@ -1,0 +1,36 @@
+@startuml
+!theme amiga
+actor resourceOwner as "Utilisateur (resource owner)"
+participant client as "MonApp"
+participant ressourceServer as "Resource server"
+database authorizationServer as "Authorization server"
+
+client -> ressourceServer: GET /photos-user
+ressourceServer -> client: 401
+
+client -> resourceOwner:  REDIRECT : GET auth?response_type=code&client_id=ID_MON_APP\
+\n&redirect_uri=REDIRECT_URI&scope=photos&state=abc
+resourceOwner -> authorizationServer : GET auth?response_type=code&client_id=ID_MON_APP\
+\n&redirect_uri=REDIRECT_URI&scope=photos&state=abc
+
+resourceOwner -> authorizationServer : se logge et accepte de partager les photos avec MonApp
+authorizationServer -> resourceOwner : redirect vers REDIRECT_URI avec des paramètres en plus ...
+
+resourceOwner -> client : https://monapp.com?code=AUTH_CODE_HERE&state=abc
+client -> client : comparaison de state
+
+client -> authorizationServer : POST https://api.authorization-server.com/token\
+\ngrant_type=authorization_code&\
+\ncode=AUTH_CODE_HERE&\
+\nredirect_uri=REDIRECT_URI&\
+\nclient_id=CLIENT_ID&\
+\nclient_secret=CLIENT_SECRET
+authorizationServer -> client : access token
+
+client -> ressourceServer: GET /photos-user (avec access token)
+ressourceServer-> ressourceServer: vérification du token
+ressourceServer-> authorizationServer : GET /access-token
+authorizationServer -> ressourceServer: 200
+ressourceServer -> client: 200 avec les photos
+
+@enduml

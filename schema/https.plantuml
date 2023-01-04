@@ -1,0 +1,18 @@
+@startuml
+!theme amiga
+
+Client-> Serveur: hello (avec clé client).
+note left : tous les échanges\nsont en TCP
+Serveur->Client: certificat, chiffrement, clé serveur 
+Client->Client: vérification du certificat
+Client->Serveur : envoi d'un premaster secret, chiffré avec la clé serveur
+Serveur->Serveur : déchiffrement de la clé serveur
+Serveur -> Serveur : génération de la clé de session\
+\navec les deux clés publiques et le premaster secret
+Client -> Client : génération de la clé de session\
+\navec les deux clés publiques et le premaster secret
+Client -> Serveur : envoi du message "finished" chiffré\
+\navec la clé de session
+Serveur -> Client : envoi du message "finished" chiffré\
+\navec la clé de session
+@enduml

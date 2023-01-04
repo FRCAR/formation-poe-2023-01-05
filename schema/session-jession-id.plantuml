@@ -1,0 +1,14 @@
+@startuml
+!theme amiga
+Client-> Serveur: GET /index.html
+Serveur-> Client: Réponse avec Header : Set-Cookie: jsessionid=uuid
+Client-> Serveur: POST /login?login=aaa&password=bbb  \
+\nCookie: jsessionid=uuid
+Serveur->Serveur: associe le jsessionid avec l'utilisateur aaa
+Serveur--> Client: Vous êtes loggé
+Client-> Serveur: GET /resourceA ...  \
+\nCookie: jsessionid=uuid
+Serveur->Serveur: récupère l'utilisateur via le cookie et vérifie s'il peut\n\
+récupérer la ressourceA
+Serveur--> Client: ressourceA
+@enduml
